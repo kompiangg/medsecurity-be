@@ -1,0 +1,10 @@
+info:
+  contact: {}
+paths: {}
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer " before the token value
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
