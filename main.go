@@ -42,15 +42,10 @@ func main() {
 
 	config.UploadFolderPath = tmpDirPath
 
-	longTermStorage, err := sqlx.InitSQLX(config.DatabaseConfig.LongTermStorageDSN)
+	db, err := sqlx.InitSQLX(config.DatabaseConfig.LongTermStorageDSN)
 	if err != nil {
 		panic(err)
 	}
-
-	// timeseriesdatabase, err := timeseriesdatabase.InitTimeSeriesDatabase(config.DatabaseConfig)
-	// if err != nil {
-	// 	panic(err)
-	// }
 
 	// redis := redis.InitRedis(redis.RedisConfig{
 	// 	Hostname: fmt.Sprintf("%s:%s", config.RedisConfig.Hostname, config.RedisConfig.Port),
@@ -70,7 +65,7 @@ func main() {
 
 	repository, err := repository.New(
 		config,
-		longTermStorage,
+		db,
 		// redis,
 		// cloudinary,
 	)

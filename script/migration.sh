@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source scripts/validate_migration.sh
+source script/validate_migration.sh
 
 username=$1
 password=$2
@@ -36,7 +36,7 @@ if [[ $isValid -eq 0 ]]; then
   exit 1; 
 fi
 
-migrate -source file://${migrationLocation} -database mysql://${username}:${password}@tcp\(${dbHost}\)/${databaseName} ${state} ${qty}
+migrate -source file://${migrationLocation} -database postgres://${username}:${password}@${dbHost}/${databaseName}?sslmode=disable ${state} ${qty}
 migrateCodeRes=$?
 if [[ $migrateCodeRes -ne 0 ]]; then
   echo "Error: migration ${state} process failed with code: ${migrateCodeRes}"

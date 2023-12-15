@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS access_requests (
+  id UUID PRIMARY KEY,
+  patient_id UUID NOT NULL,
+  doctor_id UUID NOT NULL,
+  image_id UUID NOT NULL,
+  purpose TEXT NOT NULL,
+  is_allowed BOOLEAN NOT NULL,
+  allowed_until TIMESTAMP WITH TIME ZONE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE OR REPLACE TRIGGER update_access_requests_updated_at
+BEFORE UPDATE ON access_requests
+FOR EACH ROW
+EXECUTE PROCEDURE update_updated_at_column();

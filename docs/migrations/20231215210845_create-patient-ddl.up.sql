@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS patients (
+  id UUID PRIMARY KEY,
+  username VARCHAR(255) NOT NULL,
+  password TEXT NOT NULL,
+  full_name VARCHAR(255) NOT NULL,
+  date_of_birth DATE NOT NULL,
+  gender boolean NOT NULL,
+  blood_type VARCHAR(2) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(255) NOT NULL,
+  occupation VARCHAR(255) NOT NULL,
+  religion VARCHAR(255) NOT NULL,
+  relationship_status VARCHAR(255) NOT NULL,
+  nationality VARCHAR(255) NOT NULL,
+  address TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE OR REPLACE TRIGGER update_patients_updated_at
+BEFORE UPDATE ON patients 
+FOR EACH ROW 
+EXECUTE PROCEDURE update_updated_at_column();

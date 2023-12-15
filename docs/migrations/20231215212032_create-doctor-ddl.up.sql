@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS doctors (
+  id UUID PRIMARY KEY,
+  username VARCHAR(255) NOT NULL,
+  password TEXT NOT NULL,
+  full_name VARCHAR(255) NOT NULL,
+  polyclinic_id UUID NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (polyclinic_id) REFERENCES polyclinics (id)
+);
+
+CREATE OR REPLACE TRIGGER update_doctors_updated_at
+BEFORE UPDATE ON doctors
+FOR EACH ROW
+EXECUTE PROCEDURE update_updated_at_column();
