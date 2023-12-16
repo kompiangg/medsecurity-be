@@ -18,12 +18,11 @@ var (
 )
 
 var (
-	ErrRecordNotFound       = errors.New("record not found")
-	ErrUsernameDuplicated   = errors.New("username exist")
-	ErrClinicNameDuplicated = errors.New("clinic name exist")
-	ErrUsernameNotExist     = errors.New("username not exists")
-	ErrBeginTransaction     = errors.New("failed begin transaction")
-	ErrCommitTransaction    = errors.New("failed commit transaction")
+	ErrRecordNotFound    = errors.New("record not found")
+	ErrEmailDuplicated   = errors.New("email is already exist")
+	ErrUsernameNotExist  = errors.New("username not exists")
+	ErrBeginTransaction  = errors.New("failed begin transaction")
+	ErrCommitTransaction = errors.New("failed commit transaction")
 )
 
 var (
@@ -64,11 +63,11 @@ func Unwrap(err error) error {
 		}
 	}
 
-	return nil
+	return err
 }
 
 func ErrorStack(err error) {
-	log.Warningln(err.(*errorsx.Error).ErrorStack())
+	log.Warningln(errorsx.New(err).ErrorStack())
 }
 
 func New(e interface{}) *errorsx.Error {

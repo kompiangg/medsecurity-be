@@ -11,7 +11,7 @@ type pingHandler struct {
 	e           *echo.Echo
 }
 
-func InitUploadHandler(
+func InitPingHandler(
 	e *echo.Echo,
 	pingService ping.ServiceItf,
 ) pingHandler {

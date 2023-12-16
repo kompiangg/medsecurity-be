@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -14,10 +13,10 @@ import (
 	"medsecurity/service"
 )
 
-// @securityDefinitions.apikey	BearerAuth
-// @in							header
-// @name						Authorization
-// @description				Type "Bearer " before the token value
+//	@securityDefinitions.apikey	BearerAuth
+//	@in							header
+//	@name						Authorization
+//	@description				Type "Bearer " before the token value
 func main() {
 	validator, err := validator.New()
 	if err != nil {
@@ -35,14 +34,12 @@ func main() {
 	}
 
 	if err := os.Mkdir(tmpDirPath, 0755); os.IsExist(err) {
-		fmt.Println("The directory named", tmpDirPath, "exists")
-	} else {
-		fmt.Println("The directory named", tmpDirPath, "does not exist")
+		err = nil
 	}
 
 	config.UploadFolderPath = tmpDirPath
 
-	db, err := sqlx.InitSQLX(config.DatabaseConfig.LongTermStorageDSN)
+	db, err := sqlx.InitSQLX(config.DatabaseConfig.URIConnection)
 	if err != nil {
 		panic(err)
 	}

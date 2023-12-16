@@ -44,6 +44,7 @@ func WriteErrorResponse(c echo.Context, errParam error, detail interface{}) erro
 		}
 	} else {
 		x.ErrorStack(errParam)
+		detail = nil
 	}
 
 	err := c.JSON(e.HTTPErrorCode, httppkg.HTTPBaseResponse{
