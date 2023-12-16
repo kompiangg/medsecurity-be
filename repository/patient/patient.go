@@ -5,11 +5,15 @@ import (
 	"medsecurity/type/model"
 	"medsecurity/type/params"
 
+	pkgSqlx "medsecurity/pkg/db/sqlx"
+
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
 type Repository interface {
 	FindPatientByEmail(ctx context.Context, param params.RepoFindPatientByEmailParam) (model.Patient, error)
+	DeleteByID(ctx context.Context, id uuid.UUID) (pkgSqlx.Tx, error)
 }
 
 type repository struct {

@@ -17,6 +17,7 @@ type Config struct {
 	CloudinaryConfig CloudinaryConfig `yaml:"Cloudinary"`
 	JWT              JWT              `yaml:"JWT"`
 	Permission       Permission       `yaml:"Permission"`
+	RSA              RSA              `yaml:"RSA"`
 	UploadFolderPath string
 }
 

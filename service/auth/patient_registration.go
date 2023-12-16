@@ -36,9 +36,41 @@ func (s service) PatientRegistration(ctx context.Context, param params.ServicePa
 		return errors.Wrap(err, "error when converting param to patient model")
 	}
 
-	err = s.authRepo.PatientRegistration(ctx, patient)
+	patientTx, err := s.authRepo.PatientRegistration(ctx, patient)
 	if err != nil {
 		return errors.Wrap(err, "error when registering patient")
+	}
+
+	err = patientTx.Commit()
+	if err != nil {
+		return errors.Wrap(err, "error when commiting patient transaction")
+	}
+
+	patientSecret, err := param.ToPatientSecretModel(patient.ID, s.config.RSA.KeySize)
+	if err != nil {
+		patientTx.Rollback()
+		return errors.Wrap(err, "error when converting param to patient secret model")
+	}
+
+	patientSecretTx, err := s.patientSecret.Insert(ctx, patientSecret)
+	if err != nil {
+		patientTx.Rollback()
+		return errors.Wrap(err, "error when inserting patient secret")
+	}
+
+	err = patientSecretTx.Commit()
+	if err != nil {
+		patientTx, err := s.patientRepo.DeleteByID(ctx, patient.ID)
+		if err != nil {
+			return errors.Wrap(err, "error when deleting patient")
+		}
+
+		err = patientTx.Commit()
+		if err != nil {
+			return errors.Wrap(err, "error when commiting patient transaction")
+		}
+
+		return errors.Wrap(err, "error when commiting patient secret transaction")
 	}
 
 	return nil

@@ -5,14 +5,16 @@ import (
 	"medsecurity/repository/auth"
 	"medsecurity/repository/doctor"
 	"medsecurity/repository/patient"
+	"medsecurity/repository/patient_secret"
 
 	"github.com/jmoiron/sqlx"
 )
 
 type Repository struct {
-	Auth    auth.Repository
-	Doctor  doctor.Repository
-	Patient patient.Repository
+	Auth          auth.Repository
+	Doctor        doctor.Repository
+	Patient       patient.Repository
+	PatientSecret patient_secret.Repository
 }
 
 func New(
@@ -22,8 +24,9 @@ func New(
 	// cld objstorage.ObjectStorageItf,
 ) (Repository, error) {
 	return Repository{
-		Auth:    auth.New(db),
-		Doctor:  doctor.New(db),
-		Patient: patient.New(db),
+		Auth:          auth.New(db),
+		Doctor:        doctor.New(db),
+		Patient:       patient.New(db),
+		PatientSecret: patient_secret.New(db),
 	}, nil
 }

@@ -19,7 +19,16 @@ func New(
 	validator validator.ValidatorItf,
 ) (Service, error) {
 	pingService := ping.New()
-	authService := auth.New(repository.Auth, repository.Doctor, repository.Patient, validator)
+	authService := auth.New(
+		auth.Config{
+			RSA: config.RSA,
+		},
+		repository.Auth,
+		repository.Doctor,
+		repository.Patient,
+		repository.PatientSecret,
+		validator,
+	)
 
 	return Service{
 		Ping: pingService,

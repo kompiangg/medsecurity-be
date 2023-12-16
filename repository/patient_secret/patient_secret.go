@@ -1,4 +1,4 @@
-package auth
+package patient_secret
 
 import (
 	"context"
@@ -10,8 +10,8 @@ import (
 )
 
 type Repository interface {
-	PatientRegistration(ctx context.Context, param model.Patient) (pkgSqlx.Tx, error)
-	DoctorRegistration(ctx context.Context, param model.Doctor) (pkgSqlx.Tx, error)
+	Insert(ctx context.Context, patientSecret model.PatientSecret) (pkgSqlx.Tx, error)
+	FindByPatientID(ctx context.Context) (model.PatientSecret, error)
 }
 
 type repository struct {

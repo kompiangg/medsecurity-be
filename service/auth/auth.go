@@ -2,10 +2,12 @@ package auth
 
 import (
 	"context"
+	"medsecurity/config"
 	"medsecurity/pkg/validator"
 	"medsecurity/repository/auth"
 	"medsecurity/repository/doctor"
 	"medsecurity/repository/patient"
+	"medsecurity/repository/patient_secret"
 	"medsecurity/type/params"
 )
 
@@ -15,22 +17,32 @@ type Service interface {
 }
 
 type service struct {
-	authRepo    auth.Repository
-	doctorRepo  doctor.Repository
-	patientRepo patient.Repository
-	validator   validator.ValidatorItf
+	config        Config
+	authRepo      auth.Repository
+	doctorRepo    doctor.Repository
+	patientRepo   patient.Repository
+	patientSecret patient_secret.Repository
+	validator     validator.ValidatorItf
+}
+
+type Config struct {
+	RSA config.RSA
 }
 
 func New(
+	config Config,
 	authRepo auth.Repository,
 	doctorRepo doctor.Repository,
 	patientRepo patient.Repository,
+	patientSecret patient_secret.Repository,
 	validator validator.ValidatorItf,
 ) Service {
 	return &service{
-		authRepo:    authRepo,
-		doctorRepo:  doctorRepo,
-		patientRepo: patientRepo,
-		validator:   validator,
+		config:        config,
+		authRepo:      authRepo,
+		doctorRepo:    doctorRepo,
+		patientRepo:   patientRepo,
+		patientSecret: patientSecret,
+		validator:     validator,
 	}
 }

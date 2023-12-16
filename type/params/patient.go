@@ -1,7 +1,10 @@
 package params
 
 import (
+	"crypto/rand"
+	"crypto/rsa"
 	"medsecurity/type/model"
+	"medsecurity/utils/rsax"
 	"time"
 
 	"github.com/google/uuid"
@@ -25,9 +28,13 @@ type ServicePatientRegistrationParam struct {
 	Nationality        string `json:"nationality" validate:"required"`
 	Address            string `json:"address" validate:"required"`
 	Gender             bool   `json:"gender"`
+
+	UnencryptedPassword string `json:"-" validate:"-"`
 }
 
 func (p *ServicePatientRegistrationParam) HashPassword() error {
+	p.UnencryptedPassword = p.Password
+
 	bcryptPassword, err := bcrypt.GenerateFromPassword([]byte(p.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -60,4 +67,26 @@ func (p ServicePatientRegistrationParam) ToPatientModel() (model.Patient, error)
 	}
 
 	return patient, nil
+}
+
+func (p ServicePatientRegistrationParam) ToPatientSecretModel(patientID uuid.UUID, keySize int) (model.PatientSecret, error) {
+	privateKey, err := rsa.GenerateKey(rand.Reader, keySize)
+	if err != nil {
+		return model.PatientSecret{}, err
+	}
+
+	encryptedPrivateKey, err := rsax.EncryptPrivateKey(privateKey, p.UnencryptedPassword)
+	if err != nil {
+		return model.PatientSecret{}, err
+	}
+
+	return model.PatientSecret{
+		ID:         uuid.New(),
+		PatientID:  patientID,
+		PrivateKey: string(encryptedPrivateKey),
+		KeySize:    keySize,
+		IsValid:    true,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+	}, nil
 }

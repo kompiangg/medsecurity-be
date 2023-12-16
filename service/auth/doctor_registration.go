@@ -32,9 +32,14 @@ func (s service) DoctorRegistration(ctx context.Context, param params.ServiceDoc
 	}
 
 	doctor = param.ToDoctorModel()
-	err = s.authRepo.DoctorRegistration(ctx, doctor)
+	tx, err := s.authRepo.DoctorRegistration(ctx, doctor)
 	if err != nil {
 		return errors.Wrap(err, "error when registering patient")
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return errors.Wrap(err, "error when commiting transaction")
 	}
 
 	return nil

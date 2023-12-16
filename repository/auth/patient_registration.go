@@ -2,11 +2,12 @@ package auth
 
 import (
 	"context"
+	"medsecurity/pkg/db/sqlx"
 	"medsecurity/pkg/errors"
 	"medsecurity/type/model"
 )
 
-func (r repository) PatientRegistration(ctx context.Context, param model.Patient) error {
+func (r repository) PatientRegistration(ctx context.Context, param model.Patient) (sqlx.Tx, error) {
 	statement := `
 		INSERT INTO patients (
 			id,
@@ -32,7 +33,7 @@ func (r repository) PatientRegistration(ctx context.Context, param model.Patient
 
 	tx, err := r.db.BeginTxx(ctx, nil)
 	if err != nil {
-		return errors.Wrap(err, "error at begin transaction")
+		return tx, errors.Wrap(err, "error at begin transaction")
 	}
 
 	_, err = tx.ExecContext(
@@ -44,13 +45,8 @@ func (r repository) PatientRegistration(ctx context.Context, param model.Patient
 	)
 	if err != nil {
 		tx.Rollback()
-		return errors.Wrap(err, "error at exec sql")
+		return tx, errors.Wrap(err, "error at exec sql")
 	}
 
-	err = tx.Commit()
-	if err != nil {
-		return errors.Wrap(err, "error at commit transaction")
-	}
-
-	return nil
+	return tx, nil
 }
