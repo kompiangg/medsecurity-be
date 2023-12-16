@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"database/sql"
 	"medsecurity/pkg/errors"
 	"medsecurity/type/params"
 )
@@ -16,7 +15,7 @@ func (s service) DoctorRegistration(ctx context.Context, param params.ServiceDoc
 	doctor, err := s.doctorRepo.FindDoctorByEmail(ctx, params.RepoFindDoctorByEmailParam{
 		Email: param.Email,
 	})
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		err = nil
 	} else if err != nil {
 		return errors.Wrap(err, "error when finding doctor by email")
@@ -32,7 +31,7 @@ func (s service) DoctorRegistration(ctx context.Context, param params.ServiceDoc
 	}
 
 	doctor = param.ToDoctorModel()
-	tx, err := s.authRepo.DoctorRegistration(ctx, doctor)
+	tx, err := s.doctorRepo.Insert(ctx, doctor)
 	if err != nil {
 		return errors.Wrap(err, "error when registering patient")
 	}

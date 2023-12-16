@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"database/sql"
 	"medsecurity/pkg/errors"
 	"medsecurity/type/params"
 )
@@ -16,7 +15,7 @@ func (s service) PatientRegistration(ctx context.Context, param params.ServicePa
 	patient, err := s.patientRepo.FindPatientByEmail(ctx, params.RepoFindPatientByEmailParam{
 		Email: param.Email,
 	})
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		err = nil
 	} else if err != nil {
 		return errors.Wrap(err, "error when finding patient by email")
@@ -36,7 +35,7 @@ func (s service) PatientRegistration(ctx context.Context, param params.ServicePa
 		return errors.Wrap(err, "error when converting param to patient model")
 	}
 
-	patientTx, err := s.authRepo.PatientRegistration(ctx, patient)
+	patientTx, err := s.patientRepo.Insert(ctx, patient)
 	if err != nil {
 		return errors.Wrap(err, "error when registering patient")
 	}

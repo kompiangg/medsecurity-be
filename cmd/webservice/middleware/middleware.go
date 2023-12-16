@@ -12,7 +12,7 @@ type middleware struct {
 
 type Middleware interface {
 	NotRunInProd() echo.MiddlewareFunc
-	JWTRestricted() echo.MiddlewareFunc
+	JWTRestricted(jwtType config.JWTType) echo.MiddlewareFunc
 }
 
 func New(

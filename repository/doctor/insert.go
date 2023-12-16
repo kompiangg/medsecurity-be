@@ -1,4 +1,4 @@
-package auth
+package doctor
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"medsecurity/type/model"
 )
 
-func (r repository) DoctorRegistration(ctx context.Context, param model.Doctor) (sqlx.Tx, error) {
+func (r repository) Insert(ctx context.Context, param model.Doctor) (sqlx.Tx, error) {
 	statement := `
 		INSERT INTO doctors (
 			id,

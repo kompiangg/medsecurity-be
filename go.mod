@@ -36,6 +36,7 @@ require (
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/golang/snappy v0.0.4
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/josharian/intern v1.0.0 // indirect

@@ -3,10 +3,13 @@ package params
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"medsecurity/pkg/errors"
 	"medsecurity/type/model"
+	"medsecurity/type/result"
 	"medsecurity/utils/rsax"
 	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -89,4 +92,42 @@ func (p ServicePatientRegistrationParam) ToPatientSecretModel(patientID uuid.UUI
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),
 	}, nil
+}
+
+type ServicePatientLoginParam struct {
+	Email    string `json:"email" validate:"required"`
+	Password string `json:"password" validate:"required"`
+
+	ID uuid.UUID `json:"-"`
+}
+
+func (p ServicePatientLoginParam) ComparePassword(encryptedPassword string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(encryptedPassword), []byte(p.Password))
+	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+		return errors.ErrIncorrectPassword
+	} else if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p ServicePatientLoginParam) GenerateAccessToken(day int, secret string) (result.ServicePatientLogin, error) {
+	var err error
+	var res result.ServicePatientLogin
+
+	expirationDuration := time.Duration(24*day) * time.Hour
+
+	jwtClaims := jwt.RegisteredClaims{
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(expirationDuration)),
+		Subject:   p.ID.String(),
+	}
+	unsignedToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtClaims)
+
+	res.AccessToken, err = unsignedToken.SignedString([]byte(secret))
+	if err != nil {
+		return res, errors.Wrap(err, "[Entity] UserAccount (GenerateAccessToken): error on creating jwt access token")
+	}
+
+	return res, nil
 }

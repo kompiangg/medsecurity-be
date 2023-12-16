@@ -5,6 +5,7 @@ import (
 	"medsecurity/cmd/webservice/router/doctor"
 	"medsecurity/cmd/webservice/router/patient"
 	ping "medsecurity/cmd/webservice/router/ping"
+	"medsecurity/cmd/webservice/router/session"
 	"medsecurity/config"
 	"medsecurity/service"
 
@@ -20,4 +21,5 @@ func RegisterHandler(
 	ping.InitHandler(echo, service.Ping, config)
 	patient.InitHandler(echo, service.Auth, config, middleware)
 	doctor.InitHandler(echo, service.Auth, config, middleware)
+	session.InitHandler(echo, service.Auth, config, middleware)
 }

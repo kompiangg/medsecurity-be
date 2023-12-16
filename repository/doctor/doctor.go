@@ -2,6 +2,7 @@ package doctor
 
 import (
 	"context"
+	pkgSqlx "medsecurity/pkg/db/sqlx"
 	"medsecurity/type/model"
 	"medsecurity/type/params"
 
@@ -9,6 +10,7 @@ import (
 )
 
 type Repository interface {
+	Insert(ctx context.Context, param model.Doctor) (pkgSqlx.Tx, error)
 	FindDoctorByEmail(ctx context.Context, param params.RepoFindDoctorByEmailParam) (model.Doctor, error)
 }
 

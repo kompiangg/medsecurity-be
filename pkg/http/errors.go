@@ -16,6 +16,7 @@ var errMap map[error]errorSchema = map[error]errorSchema{
 	x.ErrBadRequest:        {HTTPErrorCode: http.StatusBadRequest, Message: x.ErrBadRequest.Error()},
 	x.ErrValidation:        {HTTPErrorCode: http.StatusBadRequest, Message: x.ErrBadRequest.Error()},
 	x.ErrRecordNotFound:    {HTTPErrorCode: http.StatusNotFound, Message: x.ErrRecordNotFound.Error()},
+	x.ErrAccountNotFound:   {HTTPErrorCode: http.StatusNotFound, Message: x.ErrAccountNotFound.Error()},
 	x.ErrNotFound:          {HTTPErrorCode: http.StatusNotFound, Message: x.ErrNotFound.Error()},
 	x.ErrUnauthorized:      {HTTPErrorCode: http.StatusUnauthorized, Message: x.ErrUnauthorized.Error()},
 	x.ErrAuthTokenExpired:  {HTTPErrorCode: http.StatusUnauthorized, Message: x.ErrAuthTokenExpired.Error()},

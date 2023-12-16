@@ -14,14 +14,14 @@ func (h doctorHandler) DoctorRegistrationHandler() echo.HandlerFunc {
 		var param params.ServiceDoctorRegistrationParam
 		err := c.Bind(&param)
 		if err != nil {
-			return httpx.WriteErrorResponse(c, err, "error when binding param")
+			return httpx.WriteErrorResponse(c, err, "error when binding param", false)
 		}
 
 		err = h.authService.DoctorRegistration(c.Request().Context(), param)
 		if errors.Is(err, errors.ErrEmailDuplicated) {
-			return httpx.WriteErrorResponse(c, err, "email already registered")
+			return httpx.WriteErrorResponse(c, err, "email already registered", false)
 		} else if err != nil {
-			return httpx.WriteErrorResponse(c, err, "error when registering doctor")
+			return httpx.WriteErrorResponse(c, err, "error when registering doctor", true)
 		}
 
 		return httpx.WriteResponse(c, http.StatusCreated, "created")

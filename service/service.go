@@ -22,8 +22,8 @@ func New(
 	authService := auth.New(
 		auth.Config{
 			RSA: config.RSA,
+			JWT: config.JWT,
 		},
-		repository.Auth,
 		repository.Doctor,
 		repository.Patient,
 		repository.PatientSecret,

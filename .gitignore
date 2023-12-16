@@ -4,3 +4,5 @@ playground
 !playground/.empty
 
 build/main
+
+__debug*

@@ -15,7 +15,7 @@ type Config struct {
 	SwaggerConfig    SwaggerConfig    `yaml:"Swagger"`
 	RedisConfig      RedisConfig      `yaml:"Redis"`
 	CloudinaryConfig CloudinaryConfig `yaml:"Cloudinary"`
-	JWT              JWT              `yaml:"JWT"`
+	JWT              JWTMap           `yaml:"JWT"`
 	Permission       Permission       `yaml:"Permission"`
 	RSA              RSA              `yaml:"RSA"`
 	UploadFolderPath string

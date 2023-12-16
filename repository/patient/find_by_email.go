@@ -33,7 +33,7 @@ func (r repository) FindPatientByEmail(ctx context.Context, param params.RepoFin
 	var patient model.Patient
 	err := r.db.GetContext(ctx, &patient, r.db.Rebind(statement), param.Email)
 	if errors.Is(err, sql.ErrNoRows) {
-		return patient, err
+		return patient, errors.ErrRecordNotFound
 	} else if err != nil {
 		return patient, errors.Wrap(err, "error at FindPatientByUsername")
 	}

@@ -29,7 +29,7 @@ func WriteResponse(c echo.Context, code int, data interface{}) error {
 	return nil
 }
 
-func WriteErrorResponse(c echo.Context, errParam error, detail interface{}) error {
+func WriteErrorResponse(c echo.Context, errParam error, detail interface{}, isLog bool) error {
 	e := httppkg.GetResponseErr(errParam)
 
 	if x.Is(errParam, x.ErrValidation) {

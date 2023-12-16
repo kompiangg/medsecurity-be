@@ -18,6 +18,7 @@ var (
 )
 
 var (
+	ErrAccountNotFound   = errors.New("account not found")
 	ErrRecordNotFound    = errors.New("record not found")
 	ErrEmailDuplicated   = errors.New("email is already exist")
 	ErrUsernameNotExist  = errors.New("username not exists")

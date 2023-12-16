@@ -25,7 +25,7 @@ func (r repository) FindDoctorByEmail(ctx context.Context, param params.RepoFind
 	var doctor model.Doctor
 	err := r.db.GetContext(ctx, &doctor, r.db.Rebind(statement), param.Email)
 	if errors.Is(err, sql.ErrNoRows) {
-		return doctor, err
+		return doctor, errors.ErrRecordNotFound
 	} else if err != nil {
 		return doctor, errors.Wrap(err, "error at get doctor")
 	}
