@@ -18,7 +18,7 @@ type RepositoryFindAllPatientImage struct {
 	PatientID null.String
 	DoctorID  null.String
 
-	RepositoryPaginationParam
+	RepositoryPagination
 }
 
 type ServiceFindPatientImage struct {

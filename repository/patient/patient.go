@@ -14,6 +14,7 @@ import (
 type Repository interface {
 	Insert(ctx context.Context, param model.Patient) (pkgSqlx.Tx, error)
 	Find(ctx context.Context, param params.RepoFindPatient) (model.Patient, error)
+	FindAll(ctx context.Context, param params.RepoFindAllPatients) ([]model.Patient, error)
 	DeleteByID(ctx context.Context, id uuid.UUID) (pkgSqlx.Tx, error)
 }
 

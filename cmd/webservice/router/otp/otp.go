@@ -16,5 +16,5 @@ func InitHandler(
 ) {
 	handler := handler.InitOTPHandler(e, patientImageService)
 
-	e.POST(V1PatientRequestGetImage, handler.PatientRequestGetImage, middleware.JWTRestricted(config.PatientJWT))
+	e.POST(V1PatientRequestGetImage, handler.PatientRequestGetImage, middleware.JWTRestricted(config.AllRoleJWT))
 }

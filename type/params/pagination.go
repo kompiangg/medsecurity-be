@@ -1,6 +1,6 @@
 package params
 
-type RepositoryPaginationParam struct {
+type RepositoryPagination struct {
 	Limit  uint64
 	Offset uint64
 }
@@ -10,7 +10,7 @@ type ServicePaginationParam struct {
 	Offset uint64 `query:"offset"`
 }
 
-func (p ServicePaginationParam) ToRepositoryPaginationParam() RepositoryPaginationParam {
+func (p ServicePaginationParam) ToRepositoryPaginationParam() RepositoryPagination {
 	if p.Limit == 0 {
 		p.Limit = 10
 	}
@@ -19,5 +19,5 @@ func (p ServicePaginationParam) ToRepositoryPaginationParam() RepositoryPaginati
 		p.Offset = 0
 	}
 
-	return RepositoryPaginationParam(p)
+	return RepositoryPagination(p)
 }

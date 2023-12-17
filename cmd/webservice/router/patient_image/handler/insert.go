@@ -2,6 +2,7 @@ package handler
 
 import (
 	"medsecurity/pkg/errors"
+	"medsecurity/type/constant"
 	"medsecurity/type/params"
 	"medsecurity/utils/httpx"
 	"net/http"
@@ -15,6 +16,15 @@ func (h patientImageHandler) Insert() echo.HandlerFunc {
 		err := c.Bind(&param)
 		if err != nil {
 			return httpx.WriteErrorResponse(c, errors.ErrBadRequest, "bad request")
+		}
+
+		role, err := httpx.GetRoleAccountFromContext(c)
+		if err != nil {
+			return httpx.WriteErrorResponse(c, err, "error at parsing role")
+		}
+
+		if role != constant.DoctorRole {
+			return httpx.WriteErrorResponse(c, errors.ErrUnauthorized, "you are not authorized to access this resource")
 		}
 
 		jwtClaim, err := httpx.GetJWTClaimsFromContext(c)

@@ -25,7 +25,7 @@ func InitHandler(
 		patientImageService,
 	)
 
-	e.GET(V1FindDecryptedPatientImage, handler.GetDecryptedImage(), middleware.JWTRestricted(config.PatientJWT))
-	e.POST(V1InsertPatientsImage, handler.Insert(), middleware.JWTRestricted(config.DoctorJWT))
+	e.GET(V1FindDecryptedPatientImage, handler.GetDecryptedImage(), middleware.JWTRestricted(config.AllRoleJWT))
+	e.POST(V1InsertPatientsImage, handler.Insert(), middleware.JWTRestricted(config.AllRoleJWT))
 	e.GET(V1FindPatientsImage, handler.GetPatientsImage(), middleware.JWTRestricted(config.AllRoleJWT))
 }

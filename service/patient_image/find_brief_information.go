@@ -44,9 +44,9 @@ func (s service) FindBriefInformation(ctx context.Context, param params.ServiceF
 	}
 
 	patientImages, err := s.patientImageRepository.FindAll(ctx, params.RepositoryFindAllPatientImage{
-		DoctorID:                  param.DoctorID,
-		PatientID:                 param.PatientID,
-		RepositoryPaginationParam: param.ToRepositoryPaginationParam(),
+		DoctorID:             param.DoctorID,
+		PatientID:            param.PatientID,
+		RepositoryPagination: param.ToRepositoryPaginationParam(),
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "error when finding patient images")

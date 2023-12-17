@@ -23,6 +23,31 @@ type RepoFindPatient struct {
 	ID    null.String `db:"id"`
 }
 
+type ServiceFindPatient struct {
+	PatientID string `param:"patient_id" validate:"required,uuid4"`
+}
+
+type ServiceFindAllPatients struct {
+	Limit  uint64 `query:"limit"`
+	Offset uint64 `query:"Offset"`
+}
+
+func (s ServiceFindAllPatients) CreatePagination() RepositoryPagination {
+	if s.Limit == 0 {
+		s.Limit = 10
+	}
+
+	if s.Offset == 0 {
+		s.Offset = 0
+	}
+
+	return RepositoryPagination(s)
+}
+
+type RepoFindAllPatients struct {
+	RepositoryPagination
+}
+
 type ServicePatientRegistrationParam struct {
 	DateOfBirth        string `json:"date_of_birth" validate:"required"`
 	Password           string `json:"password" validate:"required"`
