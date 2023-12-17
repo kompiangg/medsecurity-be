@@ -4,6 +4,8 @@ import (
 	"context"
 	"medsecurity/pkg/errors"
 	"medsecurity/type/params"
+
+	"github.com/volatiletech/null/v9"
 )
 
 func (s service) DoctorRegistration(ctx context.Context, param params.ServiceDoctorRegistrationParam) error {
@@ -12,8 +14,8 @@ func (s service) DoctorRegistration(ctx context.Context, param params.ServiceDoc
 		return err
 	}
 
-	doctor, err := s.doctorRepo.FindDoctorByEmail(ctx, params.RepoFindDoctorByEmailParam{
-		Email: param.Email,
+	doctor, err := s.doctorRepo.Find(ctx, params.RepoFindDoctor{
+		Email: null.NewString(param.Email, true),
 	})
 	if errors.Is(err, errors.ErrRecordNotFound) {
 		err = nil

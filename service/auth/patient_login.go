@@ -6,6 +6,8 @@ import (
 	"medsecurity/pkg/errors"
 	"medsecurity/type/params"
 	"medsecurity/type/result"
+
+	"github.com/volatiletech/null/v9"
 )
 
 func (s service) PatientLogin(ctx context.Context, param params.ServicePatientLoginParam) (result.ServicePatientLogin, error) {
@@ -14,8 +16,8 @@ func (s service) PatientLogin(ctx context.Context, param params.ServicePatientLo
 		return result.ServicePatientLogin{}, err
 	}
 
-	patient, err := s.patientRepo.FindPatientByEmail(ctx, params.RepoFindPatientByEmailParam{
-		Email: param.Email,
+	patient, err := s.patientRepo.Find(ctx, params.RepoFindPatient{
+		Email: null.NewString(param.Email, true),
 	})
 	if errors.Is(err, errors.ErrRecordNotFound) {
 		return result.ServicePatientLogin{}, errors.ErrAccountNotFound

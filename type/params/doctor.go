@@ -8,11 +8,13 @@ import (
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
+	"github.com/volatiletech/null/v9"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type RepoFindDoctorByEmailParam struct {
-	Email string `db:"email"`
+type RepoFindDoctor struct {
+	Email null.String `db:"email"`
+	ID    null.String `db:"id"`
 }
 
 type ServiceDoctorRegistrationParam struct {
@@ -64,7 +66,7 @@ func (p ServiceDoctorLoginParam) GenerateAccessToken(day int, secret string) (re
 	var err error
 	var res result.ServiceDoctorLogin
 
-	expirationDuration := time.Duration(24*day) * time.Hour
+	expirationDuration := time.Duration(24*time.Hour) * time.Duration(day)
 
 	jwtClaims := jwt.RegisteredClaims{
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(expirationDuration)),

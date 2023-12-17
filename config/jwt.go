@@ -8,8 +8,9 @@ type JWT struct {
 type JWTType string
 
 const (
-	PatientJWT JWTType = "Patient"
 	DoctorJWT  JWTType = "Doctor"
+	PatientJWT JWTType = "Patient"
+	AllRoleJWT JWTType = "AllRole"
 )
 
 type JWTMap map[JWTType]JWT

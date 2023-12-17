@@ -5,7 +5,6 @@ import (
 	"medsecurity/pkg/errors"
 	"medsecurity/utils/httpx"
 
-	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
@@ -22,7 +21,13 @@ func (m middleware) NotRunInProd() echo.MiddlewareFunc {
 }
 
 func (m middleware) JWTRestricted(jwtType config.JWTType) echo.MiddlewareFunc {
-	return echojwt.WithConfig(echojwt.Config{
-		SigningKey: []byte(m.config.JWT[jwtType].Secret),
-	})
+	if jwtType == config.PatientJWT {
+		return m.patientJWTMiddleware
+	}
+
+	if jwtType == config.DoctorJWT {
+		return m.doctorJWTMiddleware
+	}
+
+	return m.allRoleMiddleware
 }

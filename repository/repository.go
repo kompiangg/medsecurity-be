@@ -4,6 +4,7 @@ import (
 	"medsecurity/config"
 	"medsecurity/repository/doctor"
 	"medsecurity/repository/patient"
+	"medsecurity/repository/patient_image"
 	"medsecurity/repository/patient_secret"
 
 	"github.com/jmoiron/sqlx"
@@ -13,6 +14,7 @@ type Repository struct {
 	Doctor        doctor.Repository
 	Patient       patient.Repository
 	PatientSecret patient_secret.Repository
+	PatientImage  patient_image.Repository
 }
 
 func New(
@@ -25,5 +27,6 @@ func New(
 		Doctor:        doctor.New(db),
 		Patient:       patient.New(db),
 		PatientSecret: patient_secret.New(db),
+		PatientImage:  patient_image.New(db),
 	}, nil
 }

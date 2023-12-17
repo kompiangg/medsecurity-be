@@ -8,7 +8,9 @@ import (
 
 	x "medsecurity/pkg/errors"
 	httppkg "medsecurity/pkg/http"
+	"medsecurity/type/constant"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
 
@@ -61,4 +63,27 @@ func WriteErrorResponse(c echo.Context, errParam error, detail interface{}, isLo
 	}
 
 	return nil
+}
+
+func GetJWTClaimsFromContext(c echo.Context) (jwt.MapClaims, error) {
+	token, ok := c.Get(constant.ContextKey).(*jwt.Token)
+	if !ok {
+		return nil, errors.New("cannot get jwt token from context")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, errors.New("cannot get jwt claims from context")
+	}
+
+	return claims, nil
+}
+
+func GetRoleAccountFromContext(c echo.Context) (string, error) {
+	claims, ok := c.Get(constant.ContextKeyRole).(string)
+	if !ok {
+		return "", errors.New("cannot get jwt claims from context")
+	}
+
+	return claims, nil
 }

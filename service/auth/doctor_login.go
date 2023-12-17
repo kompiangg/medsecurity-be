@@ -2,9 +2,12 @@ package auth
 
 import (
 	"context"
+	"medsecurity/config"
 	"medsecurity/pkg/errors"
 	"medsecurity/type/params"
 	"medsecurity/type/result"
+
+	"github.com/volatiletech/null/v9"
 )
 
 func (s service) DoctorLogin(ctx context.Context, param params.ServiceDoctorLoginParam) (result.ServiceDoctorLogin, error) {
@@ -13,8 +16,8 @@ func (s service) DoctorLogin(ctx context.Context, param params.ServiceDoctorLogi
 		return result.ServiceDoctorLogin{}, err
 	}
 
-	doctor, err := s.doctorRepo.FindDoctorByEmail(ctx, params.RepoFindDoctorByEmailParam{
-		Email: param.Email,
+	doctor, err := s.doctorRepo.Find(ctx, params.RepoFindDoctor{
+		Email: null.NewString(param.Email, true),
 	})
 	if errors.Is(err, errors.ErrRecordNotFound) {
 		return result.ServiceDoctorLogin{}, errors.ErrAccountNotFound
@@ -29,7 +32,7 @@ func (s service) DoctorLogin(ctx context.Context, param params.ServiceDoctorLogi
 		return result.ServiceDoctorLogin{}, errors.Wrap(err, "error at compare password")
 	}
 
-	res, err := param.GenerateAccessToken(s.config.JWT["doctor"].DurationInDay, s.config.JWT["doctor"].Secret)
+	res, err := param.GenerateAccessToken(s.config.JWT[config.PatientJWT].DurationInDay, s.config.JWT[config.PatientJWT].Secret)
 	if err != nil {
 		return result.ServiceDoctorLogin{}, errors.Wrap(err, "error at generate access token")
 	}

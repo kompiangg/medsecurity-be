@@ -19,7 +19,7 @@ func RegisterHandler(
 	middleware middleware.Middleware,
 ) {
 	ping.InitHandler(echo, service.Ping, config)
-	patient.InitHandler(echo, service.Auth, config, middleware)
+	patient.InitHandler(echo, service.Auth, service.Patient, config, middleware)
 	doctor.InitHandler(echo, service.Auth, config, middleware)
 	session.InitHandler(echo, service.Auth, config, middleware)
 }
