@@ -3,6 +3,7 @@ package patient_image
 import (
 	"context"
 	"medsecurity/pkg/validator"
+	"medsecurity/repository/access_history"
 	"medsecurity/repository/cloudinary"
 	"medsecurity/repository/doctor"
 	"medsecurity/repository/patient"
@@ -23,6 +24,7 @@ type service struct {
 	patientSecretRepository patient_secret.Repository
 	patientImageRepository  patient_image.Repository
 	cloudinaryRepository    cloudinary.Repository
+	accessHistoryRepository access_history.Repository
 	validator               validator.ValidatorItf
 }
 
@@ -32,6 +34,7 @@ func New(
 	patientSecretRepository patient_secret.Repository,
 	patientImageRepository patient_image.Repository,
 	cloudinaryRepository cloudinary.Repository,
+	accessHistoryRepository access_history.Repository,
 	validator validator.ValidatorItf,
 ) Service {
 	return &service{
@@ -40,6 +43,7 @@ func New(
 		patientSecretRepository: patientSecretRepository,
 		patientImageRepository:  patientImageRepository,
 		cloudinaryRepository:    cloudinaryRepository,
+		accessHistoryRepository: accessHistoryRepository,
 		validator:               validator,
 	}
 }

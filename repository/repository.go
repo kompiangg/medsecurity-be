@@ -2,6 +2,7 @@ package repository
 
 import (
 	"medsecurity/config"
+	"medsecurity/repository/access_history"
 	"medsecurity/repository/cloudinary"
 	"medsecurity/repository/doctor"
 	"medsecurity/repository/patient"
@@ -17,6 +18,7 @@ type Repository struct {
 	PatientSecret patient_secret.Repository
 	PatientImage  patient_image.Repository
 	Cloudinary    cloudinary.Repository
+	AccessHistory access_history.Repository
 }
 
 func New(
@@ -37,6 +39,7 @@ func New(
 		Patient:       patient.New(db),
 		PatientSecret: patient_secret.New(db),
 		PatientImage:  patient_image.New(db),
+		AccessHistory: access_history.New(db),
 		Cloudinary:    cloudinary,
 	}, nil
 }

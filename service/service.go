@@ -45,6 +45,7 @@ func New(
 		repository.PatientSecret,
 		repository.PatientImage,
 		repository.Cloudinary,
+		repository.AccessHistory,
 		validator,
 	)
 

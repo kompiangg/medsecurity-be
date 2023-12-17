@@ -92,3 +92,13 @@ func (s ServiceCreatePatientImage) ToPatientImageModel(url string) (model.Patien
 		URL:       url,
 	}, nil
 }
+
+func (s ServiceCreatePatientImage) ToAccessHistoryModel(imageID uuid.UUID) model.AccessHistory {
+	return model.AccessHistory{
+		ID:             uuid.New(),
+		PatientImageID: imageID,
+		PatientID:      null.NewString("", false),
+		DoctorID:       null.NewString(s.DoctorID, true),
+		Purpose:        "Created the image",
+	}
+}

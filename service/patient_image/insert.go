@@ -68,5 +68,10 @@ func (s service) Insert(ctx context.Context, param params.ServiceCreatePatientIm
 		return errors.Wrap(err, "error at commit transaction")
 	}
 
+	err = s.accessHistoryRepository.Insert(ctx, param.ToAccessHistoryModel(patientImage.ID))
+	if err != nil {
+		return errors.Wrap(err, "error at insert access history")
+	}
+
 	return nil
 }
