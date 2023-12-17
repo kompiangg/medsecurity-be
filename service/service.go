@@ -25,6 +25,7 @@ func New(
 	pingService := ping.New()
 	authService := auth.New(
 		auth.Config{
+			AES: config.AES,
 			RSA: config.RSA,
 			JWT: config.JWT,
 		},
@@ -47,6 +48,9 @@ func New(
 		repository.Cloudinary,
 		repository.AccessHistory,
 		validator,
+		patient_image.Config{
+			AES: config.AES,
+		},
 	)
 
 	return Service{

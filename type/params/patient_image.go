@@ -10,9 +10,11 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/volatiletech/null/v9"
+	"golang.org/x/crypto/bcrypt"
 )
 
-type RepositoryFindPatientImage struct {
+type RepositoryFindAllPatientImage struct {
+	ImageID   null.String
 	PatientID null.String
 	DoctorID  null.String
 
@@ -101,4 +103,48 @@ func (s ServiceCreatePatientImage) ToAccessHistoryModel(imageID uuid.UUID) model
 		DoctorID:       null.NewString(s.DoctorID, true),
 		Purpose:        "Created the image",
 	}
+}
+
+type ServicePatientRequestGetImage struct {
+	ImageID  string `json:"image_id" validate:"required,uuid4"`
+	Password string `json:"password" validate:"required"`
+
+	PatientID string `json:"-" validate:"required,uuid4"`
+}
+
+func (s ServicePatientRequestGetImage) ComparePassword(encryptedPassword string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(encryptedPassword), []byte(s.Password))
+	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+		return errors.ErrIncorrectPassword
+	} else if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+type RepositoryFindPatientImage struct {
+	ID        uuid.UUID
+	PatientID null.String
+	DoctorID  null.String
+	IsValid   bool
+}
+
+type ServicePatientGetImage struct {
+	Token string `param:"token" validate:"required"`
+
+	PatientID string `json:"-"`
+}
+
+type RepositoryInsertRequestPatientImageToken struct {
+	PatientID     string `redis:"-"`
+	ValidInMinute int    `redis:"-"`
+
+	ImageID  string `redis:"image_id"`
+	Password string `redis:"password"`
+	Token    string `redis:"token"`
+}
+
+type RepositoryFindRequestPatientImageToken struct {
+	PatientID uuid.UUID `redis:"-"`
 }

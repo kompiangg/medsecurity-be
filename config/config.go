@@ -18,6 +18,7 @@ type Config struct {
 	JWT              JWTMap           `yaml:"JWT"`
 	Permission       Permission       `yaml:"Permission"`
 	RSA              RSA              `yaml:"RSA"`
+	AES              AES              `yaml:"AES"`
 	UploadFolderPath string
 }
 

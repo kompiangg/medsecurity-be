@@ -3,6 +3,7 @@ package cloudinary
 import (
 	"context"
 	"io"
+	"net/http"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
@@ -11,10 +12,12 @@ import (
 type Repository interface {
 	UploadEncryptedFile(ctx context.Context, content io.Reader) (uploader.UploadResult, error)
 	Remove(ctx context.Context, publicID string) error
+	DownloadFile(ctx context.Context, url string) ([]byte, error)
 }
 
 type repository struct {
 	cloudinary *cloudinary.Cloudinary
+	httpClient *http.Client
 }
 
 type Config struct {
@@ -29,5 +32,6 @@ func New(config Config) (Repository, error) {
 
 	return &repository{
 		cloudinary: cld,
+		httpClient: &http.Client{},
 	}, nil
 }

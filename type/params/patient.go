@@ -8,6 +8,7 @@ import (
 	"medsecurity/pkg/errors"
 	"medsecurity/type/model"
 	"medsecurity/type/result"
+	"medsecurity/utils/aesx"
 	"medsecurity/utils/rsax"
 	"time"
 
@@ -76,7 +77,7 @@ func (p ServicePatientRegistrationParam) ToPatientModel() (model.Patient, error)
 	return patient, nil
 }
 
-func (p ServicePatientRegistrationParam) ToPatientSecretModel(patientID uuid.UUID, keySize int) (model.PatientSecret, error) {
+func (p ServicePatientRegistrationParam) ToPatientSecretModel(patientID uuid.UUID, keySize int, salt string, aesSecret string) (model.PatientSecret, error) {
 	privateKey, err := rsa.GenerateKey(rand.Reader, keySize)
 	if err != nil {
 		return model.PatientSecret{}, err
@@ -94,7 +95,12 @@ func (p ServicePatientRegistrationParam) ToPatientSecretModel(patientID uuid.UUI
 		},
 	)
 
-	encryptedPrivateKey, err := rsax.EncryptPrivateKey(privateKey, p.UnencryptedPassword)
+	encryptedPrivateKey, err := rsax.EncryptPrivateKey(privateKey, p.UnencryptedPassword, salt)
+	if err != nil {
+		return model.PatientSecret{}, err
+	}
+
+	encryptedSalt, err := aesx.Encrypt([]byte(aesSecret), []byte(salt))
 	if err != nil {
 		return model.PatientSecret{}, err
 	}
@@ -105,6 +111,7 @@ func (p ServicePatientRegistrationParam) ToPatientSecretModel(patientID uuid.UUI
 		PrivateKey: string(encryptedPrivateKey),
 		PublicKey:  string(publicKeyPEM),
 		KeySize:    keySize,
+		Salt:       string(encryptedSalt),
 		IsValid:    true,
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),

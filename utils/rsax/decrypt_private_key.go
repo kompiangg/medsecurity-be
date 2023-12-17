@@ -12,15 +12,15 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 )
 
-func DecryptPrivateKey(encryptedKey []byte, passphrase string) (*rsa.PrivateKey, error) {
+func DecryptPrivateKey(encryptedKey string, passphrase string, salt string) (*rsa.PrivateKey, error) {
 	// Decode the PEM data
-	block, _ := pem.Decode(encryptedKey)
+	block, _ := pem.Decode([]byte(encryptedKey))
 	if block == nil || block.Type != "ENCRYPTED RSA PRIVATE KEY" {
 		return nil, errors.New("no valid PEM data found")
 	}
 
 	// Derive the key from the passphrase
-	key := pbkdf2.Key([]byte(passphrase), []byte(passphrase), 10000, 32, sha256.New)
+	key := pbkdf2.Key([]byte(passphrase), []byte(salt), 4096, 32, sha256.New)
 
 	// Decrypt the data
 	blockCipher, err := aes.NewCipher(key)

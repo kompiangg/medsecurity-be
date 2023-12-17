@@ -47,7 +47,10 @@ func (s service) PatientRegistration(ctx context.Context, param params.ServicePa
 		return errors.Wrap(err, "error when commiting patient transaction")
 	}
 
-	patientSecret, err := param.ToPatientSecretModel(patient.ID, s.config.RSA.KeySize)
+	patientSecret, err := param.ToPatientSecretModel(
+		patient.ID, s.config.RSA.KeySize,
+		s.config.AES.Salt, s.config.AES.Secret,
+	)
 	if err != nil {
 		patientTx.Rollback()
 		return errors.Wrap(err, "error when converting param to patient secret model")

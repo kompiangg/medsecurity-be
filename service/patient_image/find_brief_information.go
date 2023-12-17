@@ -43,7 +43,7 @@ func (s service) FindBriefInformation(ctx context.Context, param params.ServiceF
 		}
 	}
 
-	patientImages, err := s.patientImageRepository.Find(ctx, params.RepositoryFindPatientImage{
+	patientImages, err := s.patientImageRepository.FindAll(ctx, params.RepositoryFindAllPatientImage{
 		DoctorID:                  param.DoctorID,
 		PatientID:                 param.PatientID,
 		RepositoryPaginationParam: param.ToRepositoryPaginationParam(),

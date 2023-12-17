@@ -15,8 +15,9 @@ func (r repository) Insert(ctx context.Context, param model.PatientSecret) (sqlx
 			private_key,
 			public_key,
 			key_size,
+			salt,
 			is_valid
-		) VALUES (?, ?, ?, ?, ?, ?)
+		) VALUES (?, ?, ?, ?, ?, ?, ?)
 	`
 
 	tx, err := r.db.BeginTxx(ctx, nil)
@@ -25,9 +26,9 @@ func (r repository) Insert(ctx context.Context, param model.PatientSecret) (sqlx
 	}
 
 	_, err = tx.ExecContext(ctx, r.db.Rebind(statement),
-		param.ID,
-		param.PatientID, param.PrivateKey, param.PublicKey,
-		param.KeySize, param.IsValid,
+		param.ID, param.PatientID,
+		param.PrivateKey, param.PublicKey,
+		param.KeySize, param.Salt, param.IsValid,
 	)
 
 	if err != nil {

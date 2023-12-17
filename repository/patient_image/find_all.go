@@ -9,7 +9,7 @@ import (
 	"github.com/Masterminds/squirrel"
 )
 
-func (r repository) Find(ctx context.Context, param params.RepositoryFindPatientImage) ([]model.PatientImage, error) {
+func (r repository) FindAll(ctx context.Context, param params.RepositoryFindAllPatientImage) ([]model.PatientImage, error) {
 	q := squirrel.Select(
 		"id",
 		"patient_id",

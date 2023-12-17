@@ -18,6 +18,7 @@ func (r repository) FindByPatientID(ctx context.Context, patientID uuid.UUID) (m
 			private_key,
 			public_key,
 			key_size,
+			salt,
 			is_valid,
 			created_at,
 			updated_at

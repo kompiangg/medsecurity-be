@@ -28,6 +28,7 @@ type service struct {
 
 type Config struct {
 	RSA config.RSA
+	AES config.AES
 	JWT config.JWTMap
 }
 

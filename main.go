@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -8,6 +9,7 @@ import (
 	"medsecurity/config"
 	"medsecurity/pkg/db/sqlx"
 	_ "medsecurity/pkg/errors"
+	"medsecurity/pkg/redis"
 	"medsecurity/pkg/validator"
 	"medsecurity/repository"
 	"medsecurity/service"
@@ -44,27 +46,17 @@ func main() {
 		panic(err)
 	}
 
-	// redis := redis.InitRedis(redis.RedisConfig{
-	// 	Hostname: fmt.Sprintf("%s:%s", config.RedisConfig.Hostname, config.RedisConfig.Port),
-	// 	Username: config.RedisConfig.Username,
-	// 	Password: config.RedisConfig.Password,
-	// 	DB:       config.RedisConfig.DB,
-	// })
-
-	// cloudinary, err := cloudinary.InitCloudinary(cloudinary.CloudinaryConfig{
-	// 	APIKey:    config.CloudinaryConfig.APIKey,
-	// 	APISecret: config.CloudinaryConfig.APISecret,
-	// 	CloudName: config.CloudinaryConfig.CloudName,
-	// })
-	// if err != nil {
-	// 	panic(err)
-	// }
+	redis := redis.InitRedis(redis.RedisConfig{
+		Hostname: fmt.Sprintf("%s:%s", config.Redis.Hostname, config.Redis.Port),
+		Username: config.Redis.Username,
+		Password: config.Redis.Password,
+		DB:       config.Redis.DB,
+	})
 
 	repository, err := repository.New(
 		config,
 		db,
-		// redis,
-		// cloudinary,
+		redis,
 	)
 	if err != nil {
 		panic(err)

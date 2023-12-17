@@ -10,6 +10,7 @@ import (
 	"medsecurity/repository/patient_secret"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/redis/go-redis/v9"
 )
 
 type Repository struct {
@@ -24,8 +25,7 @@ type Repository struct {
 func New(
 	config config.Config,
 	db *sqlx.DB,
-	// redis *redis.Client,
-	// cld objstorage.ObjectStorageItf,
+	redis *redis.Client,
 ) (Repository, error) {
 	cloudinary, err := cloudinary.New(cloudinary.Config{
 		URIConnection: config.Cloudinary.URIConnection,
@@ -38,7 +38,7 @@ func New(
 		Doctor:        doctor.New(db),
 		Patient:       patient.New(db),
 		PatientSecret: patient_secret.New(db),
-		PatientImage:  patient_image.New(db),
+		PatientImage:  patient_image.New(db, redis),
 		AccessHistory: access_history.New(db),
 		Cloudinary:    cloudinary,
 	}, nil

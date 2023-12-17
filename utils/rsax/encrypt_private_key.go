@@ -13,7 +13,7 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 )
 
-func EncryptPrivateKey(privateKey *rsa.PrivateKey, passphrase string) ([]byte, error) {
+func EncryptPrivateKey(privateKey *rsa.PrivateKey, passphrase string, salt string) ([]byte, error) {
 	// Convert the private key to PEM format
 	privDER := x509.MarshalPKCS1PrivateKey(privateKey)
 	privBlock := &pem.Block{
@@ -22,7 +22,7 @@ func EncryptPrivateKey(privateKey *rsa.PrivateKey, passphrase string) ([]byte, e
 	}
 
 	// Derive a key from the passphrase using PBKDF2
-	key := pbkdf2.Key([]byte(passphrase), []byte(passphrase), 4096, 32, sha256.New)
+	key := pbkdf2.Key([]byte(passphrase), []byte(salt), 4096, 32, sha256.New)
 
 	// Encrypt the private key using AES
 	block, err := aes.NewCipher(key)
