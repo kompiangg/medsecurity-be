@@ -20,5 +20,4 @@ func InitHandler(
 	handler := handler.InitPatientHandler(e, authService, patientService)
 
 	e.POST(V1PatientRegistrationPath, handler.PatienRegistrationHandler())
-	e.GET(V1PatientsImage, handler.GetPatientsImage(), middleware.JWTRestricted(config.AllRoleJWT))
 }

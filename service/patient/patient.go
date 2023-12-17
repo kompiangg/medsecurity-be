@@ -1,17 +1,13 @@
 package patient
 
 import (
-	"context"
 	"medsecurity/pkg/validator"
 	"medsecurity/repository/doctor"
 	"medsecurity/repository/patient"
 	"medsecurity/repository/patient_image"
-	"medsecurity/type/params"
-	"medsecurity/type/result"
 )
 
 type Service interface {
-	FindPatientImageBriefInformation(ctx context.Context, param params.ServiceFindPatientImage) ([]result.PatientImageBriefInformation, error)
 }
 
 type service struct {

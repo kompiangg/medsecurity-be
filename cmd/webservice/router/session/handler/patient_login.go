@@ -14,14 +14,14 @@ func (h sessionHandler) PatientLogin() echo.HandlerFunc {
 		var param params.ServicePatientLoginParam
 		err := c.Bind(&param)
 		if err != nil {
-			return httpx.WriteErrorResponse(c, errors.ErrBadRequest, "bad request", false)
+			return httpx.WriteErrorResponse(c, errors.ErrBadRequest, "bad request")
 		}
 
 		token, err := h.authService.PatientLogin(c.Request().Context(), param)
 		if errors.Is(err, errors.ErrAccountNotFound) {
-			return httpx.WriteErrorResponse(c, err, "account not found", false)
+			return httpx.WriteErrorResponse(c, err, "account not found")
 		} else if err != nil {
-			return httpx.WriteErrorResponse(c, err, "error when login", true)
+			return httpx.WriteErrorResponse(c, err, "error when login")
 		}
 
 		return httpx.WriteResponse(c, http.StatusOK, token)

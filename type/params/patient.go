@@ -3,6 +3,8 @@ package params
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
 	"medsecurity/pkg/errors"
 	"medsecurity/type/model"
 	"medsecurity/type/result"
@@ -80,6 +82,18 @@ func (p ServicePatientRegistrationParam) ToPatientSecretModel(patientID uuid.UUI
 		return model.PatientSecret{}, err
 	}
 
+	publicKeyBytes, err := x509.MarshalPKIXPublicKey(&privateKey.PublicKey)
+	if err != nil {
+		return model.PatientSecret{}, err
+	}
+
+	publicKeyPEM := pem.EncodeToMemory(
+		&pem.Block{
+			Type:  "PUBLIC KEY",
+			Bytes: publicKeyBytes,
+		},
+	)
+
 	encryptedPrivateKey, err := rsax.EncryptPrivateKey(privateKey, p.UnencryptedPassword)
 	if err != nil {
 		return model.PatientSecret{}, err
@@ -89,6 +103,7 @@ func (p ServicePatientRegistrationParam) ToPatientSecretModel(patientID uuid.UUI
 		ID:         uuid.New(),
 		PatientID:  patientID,
 		PrivateKey: string(encryptedPrivateKey),
+		PublicKey:  string(publicKeyPEM),
 		KeySize:    keySize,
 		IsValid:    true,
 		CreatedAt:  time.Now(),
@@ -128,7 +143,7 @@ func (p ServicePatientLoginParam) GenerateAccessToken(day int, secret string) (r
 
 	res.AccessToken, err = unsignedToken.SignedString([]byte(secret))
 	if err != nil {
-		return res, errors.Wrap(err, "[Entity] UserAccount (GenerateAccessToken): error on creating jwt access token")
+		return res, errors.Wrap(err, "error on creating jwt access token")
 	}
 
 	return res, nil

@@ -2,34 +2,32 @@ package patient_secret
 
 import (
 	"context"
-	"database/sql"
 	"medsecurity/pkg/db/sqlx"
 	"medsecurity/pkg/errors"
 	"medsecurity/type/model"
 )
 
-func (r repository) Insert(ctx context.Context, patientSecret model.PatientSecret) (sqlx.Tx, error) {
+func (r repository) Insert(ctx context.Context, param model.PatientSecret) (sqlx.Tx, error) {
 	statement := `
 		INSERT INTO patient_secrets (
 			id,
 			patient_id,
 			private_key,
+			public_key,
 			key_size,
 			is_valid
-		) VALUES (?, ?, ?, ?, ?)
+		) VALUES (?, ?, ?, ?, ?, ?)
 	`
 
-	tx, err := r.db.BeginTxx(ctx, &sql.TxOptions{
-		Isolation: sql.LevelSerializable,
-	})
+	tx, err := r.db.BeginTxx(ctx, nil)
 	if err != nil {
 		return tx, errors.Wrap(err, "error at Insert")
 	}
 
 	_, err = tx.ExecContext(ctx, r.db.Rebind(statement),
-		patientSecret.ID,
-		patientSecret.PatientID, patientSecret.PrivateKey,
-		patientSecret.KeySize, patientSecret.IsValid,
+		param.ID,
+		param.PatientID, param.PrivateKey, param.PublicKey,
+		param.KeySize, param.IsValid,
 	)
 
 	if err != nil {

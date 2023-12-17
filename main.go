@@ -39,7 +39,7 @@ func main() {
 
 	config.UploadFolderPath = tmpDirPath
 
-	db, err := sqlx.InitSQLX(config.DatabaseConfig.URIConnection)
+	db, err := sqlx.InitSQLX(config.Database.URIConnection)
 	if err != nil {
 		panic(err)
 	}

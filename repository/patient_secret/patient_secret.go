@@ -6,12 +6,13 @@ import (
 
 	pkgSqlx "medsecurity/pkg/db/sqlx"
 
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
 type Repository interface {
 	Insert(ctx context.Context, patientSecret model.PatientSecret) (pkgSqlx.Tx, error)
-	FindByPatientID(ctx context.Context) (model.PatientSecret, error)
+	FindByPatientID(ctx context.Context, patientID uuid.UUID) (model.PatientSecret, error)
 }
 
 type repository struct {

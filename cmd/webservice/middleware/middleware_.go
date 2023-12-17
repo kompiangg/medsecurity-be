@@ -11,8 +11,8 @@ import (
 func (m middleware) NotRunInProd() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if m.config.ServerConfig.Environment == "prod" {
-				return httpx.WriteErrorResponse(c, errors.ErrUnauthorized, nil, false)
+			if m.config.Server.Environment == "prod" {
+				return httpx.WriteErrorResponse(c, errors.ErrUnauthorized, nil)
 			}
 
 			return next(c)

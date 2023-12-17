@@ -31,7 +31,7 @@ func WriteResponse(c echo.Context, code int, data interface{}) error {
 	return nil
 }
 
-func WriteErrorResponse(c echo.Context, errParam error, detail interface{}, isLog bool) error {
+func WriteErrorResponse(c echo.Context, errParam error, detail interface{}) error {
 	e := httppkg.GetResponseErr(errParam)
 
 	if x.Is(errParam, x.ErrValidation) {
@@ -44,8 +44,10 @@ func WriteErrorResponse(c echo.Context, errParam error, detail interface{}, isLo
 			errs := joinErr.Unwrap()[1].Error()
 			detail = strings.Split(errs, "\n --- ")[1:]
 		}
-	} else {
+	} else if !x.Is(errParam, x.ErrInternalServer) {
 		x.ErrorStack(errParam)
+		detail = nil
+	} else {
 		detail = nil
 	}
 

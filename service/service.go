@@ -6,13 +6,15 @@ import (
 	"medsecurity/repository"
 	"medsecurity/service/auth"
 	"medsecurity/service/patient"
+	"medsecurity/service/patient_image"
 	"medsecurity/service/ping"
 )
 
 type Service struct {
-	Ping    ping.ServiceItf
-	Auth    auth.Service
-	Patient patient.Service
+	Ping         ping.ServiceItf
+	Auth         auth.Service
+	Patient      patient.Service
+	PatientImage patient_image.Service
 }
 
 func New(
@@ -37,10 +39,19 @@ func New(
 		repository.PatientImage,
 		validator,
 	)
+	patientImage := patient_image.New(
+		repository.Patient,
+		repository.Doctor,
+		repository.PatientSecret,
+		repository.PatientImage,
+		repository.Cloudinary,
+		validator,
+	)
 
 	return Service{
-		Ping:    pingService,
-		Auth:    authService,
-		Patient: patientService,
+		Ping:         pingService,
+		Auth:         authService,
+		Patient:      patientService,
+		PatientImage: patientImage,
 	}, nil
 }

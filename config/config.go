@@ -10,11 +10,11 @@ import (
 )
 
 type Config struct {
-	DatabaseConfig   DatabaseConfig   `yaml:"Database"`
-	ServerConfig     ServerConfig     `yaml:"Server"`
-	SwaggerConfig    SwaggerConfig    `yaml:"Swagger"`
-	RedisConfig      RedisConfig      `yaml:"Redis"`
-	CloudinaryConfig CloudinaryConfig `yaml:"Cloudinary"`
+	Database         DatabaseConfig   `yaml:"Database"`
+	Server           ServerConfig     `yaml:"Server"`
+	Swagger          SwaggerConfig    `yaml:"Swagger"`
+	Redis            RedisConfig      `yaml:"Redis"`
+	Cloudinary       CloudinaryConfig `yaml:"Cloudinary"`
 	JWT              JWTMap           `yaml:"JWT"`
 	Permission       Permission       `yaml:"Permission"`
 	RSA              RSA              `yaml:"RSA"`

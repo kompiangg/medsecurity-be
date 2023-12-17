@@ -21,9 +21,9 @@ func InitWebService(
 	validator validator.ValidatorItf,
 ) error {
 	echo, err := http.InitEchoServer(&http.ServerConfig{
-		Port:                 config.ServerConfig.Port,
-		Environment:          config.ServerConfig.Environment,
-		WhiteListAllowOrigin: config.ServerConfig.WhiteListAllowOrigin,
+		Port:                 config.Server.Port,
+		Environment:          config.Server.Environment,
+		WhiteListAllowOrigin: config.Server.WhiteListAllowOrigin,
 	})
 	if err != nil {
 		return err
@@ -31,7 +31,7 @@ func InitWebService(
 
 	echo.Echo.Use(middleware.CORSWithConfig(
 		middleware.CORSConfig{
-			AllowOrigins: config.ServerConfig.WhiteListAllowOrigin,
+			AllowOrigins: config.Server.WhiteListAllowOrigin,
 		},
 	))
 
@@ -54,10 +54,10 @@ func InitWebService(
 }
 
 func initSwagger(config config.Config) {
-	docs.SwaggerInfo.Title = fmt.Sprintf("%s API", config.SwaggerConfig.Title)
-	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%s", config.SwaggerConfig.Hostname, config.SwaggerConfig.Port)
+	docs.SwaggerInfo.Title = fmt.Sprintf("%s API", config.Swagger.Title)
+	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%s", config.Swagger.Hostname, config.Swagger.Port)
 	docs.SwaggerInfo.BasePath = ""
-	docs.SwaggerInfo.Version = config.SwaggerConfig.Version
-	docs.SwaggerInfo.Description = config.SwaggerConfig.Description
-	docs.SwaggerInfo.Schemes = config.SwaggerConfig.Schemes
+	docs.SwaggerInfo.Version = config.Swagger.Version
+	docs.SwaggerInfo.Description = config.Swagger.Description
+	docs.SwaggerInfo.Schemes = config.Swagger.Schemes
 }

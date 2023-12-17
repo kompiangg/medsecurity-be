@@ -10,6 +10,7 @@ type PatientSecret struct {
 	ID         uuid.UUID `db:"id"`
 	PatientID  uuid.UUID `db:"patient_id"`
 	PrivateKey string    `db:"private_key"`
+	PublicKey  string    `db:"public_key"`
 	KeySize    int       `db:"key_size"`
 	IsValid    bool      `db:"is_valid"`
 	CreatedAt  time.Time `db:"created_at"`
