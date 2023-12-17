@@ -32,7 +32,7 @@ func (s service) DoctorLogin(ctx context.Context, param params.ServiceDoctorLogi
 		return result.ServiceDoctorLogin{}, errors.Wrap(err, "error at compare password")
 	}
 
-	res, err := param.GenerateAccessToken(s.config.JWT[config.PatientJWT].DurationInDay, s.config.JWT[config.PatientJWT].Secret)
+	res, err := param.GenerateAccessToken(s.config.JWT[config.DoctorJWT].DurationInDay, s.config.JWT[config.DoctorJWT].Secret)
 	if err != nil {
 		return result.ServiceDoctorLogin{}, errors.Wrap(err, "error at generate access token")
 	}
