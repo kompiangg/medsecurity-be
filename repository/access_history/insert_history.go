@@ -16,7 +16,7 @@ func (r repository) Insert(ctx context.Context, param model.AccessHistory) error
 
 	_, err := r.db.ExecContext(
 		ctx, r.db.Rebind(query),
-		param.ID, param.PatientID, param.DoctorID, param.Purpose,
+		param.ID, param.PatientImageID, param.PatientID, param.DoctorID, param.Purpose,
 	)
 	if err != nil {
 		return errors.Wrap(err, "failed to insert access history")
