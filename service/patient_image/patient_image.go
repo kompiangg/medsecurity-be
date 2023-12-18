@@ -21,6 +21,7 @@ type Service interface {
 	PatientRequestGetImage(ctx context.Context, param params.ServicePatientRequestGetImage) (result.ServicePatientRequestGetImage, error)
 	PatientGetImage(ctx context.Context, param params.ServicePatientGetImage) (result.ServicePatientGetImage, error)
 	GivingPermission(ctx context.Context, param params.ServiceGivingPermission) error
+	DoctorGetImage(ctx context.Context, param params.DoctorPatientGetImage) (result.ServiceDoctorGetImage, error)
 }
 
 type service struct {

@@ -163,6 +163,23 @@ func (s ServicePatientGetImage) ToAccessHistoryModel() (model.AccessHistory, err
 	}, nil
 }
 
+type DoctorPatientGetImage struct {
+	PermissionID string `param:"permission_id" validate:"required"`
+
+	DoctorID string    `json:"-"`
+	ImageID  uuid.UUID `json:"-"`
+}
+
+func (s DoctorPatientGetImage) ToAccessHistoryModel() (model.AccessHistory, error) {
+	return model.AccessHistory{
+		ID:             uuid.New(),
+		PatientImageID: s.ImageID,
+		PatientID:      null.NewString("", false),
+		DoctorID:       null.NewString(s.DoctorID, true),
+		Purpose:        "Downloaded the image",
+	}, nil
+}
+
 type RepositoryInsertRequestPatientImageToken struct {
 	PatientID     string `redis:"-"`
 	ValidInMinute int    `redis:"-"`
@@ -223,8 +240,14 @@ func (s ServiceGivingPermission) CompareHashAndPassword(encryptedPassword string
 }
 
 type RepositoryInsertRequestToRedis struct {
+	DoctorID        string `redis:"-"`
 	RequestID       string `redis:"-"`
 	KeepAliveInDays int    `redis:"-"`
 
 	Password string `redis:"password"`
+}
+
+type RepositoryGetDoctorPermissionRedis struct {
+	DoctorID  string `redis:"-"`
+	RequestID string `redis:"-"`
 }

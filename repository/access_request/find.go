@@ -36,3 +36,31 @@ func (r repository) FindByImageID(ctx context.Context, imageID uuid.UUID) (model
 
 	return res, nil
 }
+
+func (r repository) FindByAccessID(ctx context.Context, accessID uuid.UUID) (model.AccessRequest, error) {
+	q := `
+		SELECT
+			id,
+			patient_id,
+			doctor_id,
+			image_id,
+			purpose,
+			is_allowed,
+			allowed_until
+		FROM access_requests
+		WHERE
+			id = ?
+		ORDER BY
+			created_at DESC
+	`
+
+	var res model.AccessRequest
+	err := r.db.GetContext(ctx, &res, r.db.Rebind(q), accessID)
+	if errors.Is(err, sql.ErrNoRows) {
+		return res, errors.ErrRecordNotFound
+	} else if err != nil {
+		return model.AccessRequest{}, errors.Wrap(err, "error at find access request by image id")
+	}
+
+	return res, nil
+}

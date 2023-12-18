@@ -70,6 +70,7 @@ func (s service) GivingPermission(ctx context.Context, param params.ServiceGivin
 	}
 
 	err = s.accessRequestRepository.InsertRequestToRedis(ctx, params.RepositoryInsertRequestToRedis{
+		DoctorID:        param.DoctorID,
 		RequestID:       accessRequest.ID.String(),
 		KeepAliveInDays: 7,
 		Password:        string(encryptedPassword),

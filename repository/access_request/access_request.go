@@ -4,6 +4,7 @@ import (
 	"context"
 	"medsecurity/type/model"
 	"medsecurity/type/params"
+	"medsecurity/type/result"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -14,6 +15,8 @@ type Repository interface {
 	InsertNewRequest(ctx context.Context, param model.AccessRequest) error
 	InsertRequestToRedis(ctx context.Context, param params.RepositoryInsertRequestToRedis) error
 	FindByImageID(ctx context.Context, imageID uuid.UUID) (model.AccessRequest, error)
+	GetDoctorPermissionRedis(ctx context.Context, param params.RepositoryGetDoctorPermissionRedis) (result.RepositoryGetDoctorPermission, error)
+	FindByAccessID(ctx context.Context, accessID uuid.UUID) (model.AccessRequest, error)
 }
 
 type repository struct {

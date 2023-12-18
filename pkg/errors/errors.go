@@ -21,6 +21,7 @@ var (
 	ErrAccountNotFound   = errors.New("account not found")
 	ErrDoctorNotFound    = errors.New("doctor not found")
 	ErrRecordNotFound    = errors.New("record not found")
+	ErrPermissionExpired = errors.New("permission expired")
 	ErrEmailDuplicated   = errors.New("email is already exist")
 	ErrUsernameNotExist  = errors.New("username not exists")
 	ErrBeginTransaction  = errors.New("failed begin transaction")

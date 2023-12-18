@@ -84,3 +84,31 @@ type RepositoryGetRequestPatientImageToken struct {
 	Token    string `redis:"token"`
 	Password string `redis:"password"`
 }
+
+type ServiceDoctorGetImage struct {
+	DocumentName string `json:"document_name"`
+	DocumentType string `json:"document_type"`
+	Base64Image  string `json:"base64_image"`
+}
+
+func (s *ServiceDoctorGetImage) DecryptImage(privateKey *rsa.PrivateKey, keySize int, encryptedImage []byte) error {
+	var decryptedData []byte
+	chunkedDataLength := keySize / 8
+
+	for i := 0; i < len(encryptedImage); i += chunkedDataLength {
+		end := i + chunkedDataLength
+		if end > len(encryptedImage) {
+			end = len(encryptedImage)
+		}
+
+		decryptedBytes, err := rsa.DecryptPKCS1v15(rand.Reader, privateKey, encryptedImage[i:end])
+		if err != nil {
+			return err
+		}
+
+		decryptedData = append(decryptedData, decryptedBytes...)
+	}
+
+	s.Base64Image = string(decryptedData)
+	return nil
+}

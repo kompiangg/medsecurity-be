@@ -25,6 +25,7 @@ func InitHandler(
 		patientImageService,
 	)
 
+	e.GET("/v1/patient-image/doctor/:permission_id", handler.DoctorGetDecryptedImage(), middleware.JWTRestricted(config.AllRoleJWT))
 	e.GET(V1FindDecryptedPatientImage, handler.GetDecryptedImage(), middleware.JWTRestricted(config.AllRoleJWT))
 	e.POST(V1InsertPatientsImage, handler.Insert(), middleware.JWTRestricted(config.AllRoleJWT))
 	e.GET(V1FindPatientsImage, handler.GetPatientsImage(), middleware.JWTRestricted(config.AllRoleJWT))

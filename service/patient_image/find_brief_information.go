@@ -6,12 +6,18 @@ import (
 	"medsecurity/type/constant"
 	"medsecurity/type/params"
 	"medsecurity/type/result"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/volatiletech/null/v9"
 )
 
 func (s service) FindBriefInformation(ctx context.Context, param params.ServiceFindPatientImage) ([]result.PatientImageBriefInformation, error) {
 	if param.PatientID.Valid {
+		if err := uuid.Validate(param.PatientID.String); err != nil {
+			return nil, errors.ErrBadRequest
+		}
+
 		_, err := s.patientRepository.Find(ctx, params.RepoFindPatient{
 			ID: param.PatientID,
 		})
@@ -33,6 +39,10 @@ func (s service) FindBriefInformation(ctx context.Context, param params.ServiceF
 	}
 
 	if param.DoctorID.Valid {
+		if err := uuid.Validate(param.DoctorID.String); err != nil {
+			return nil, errors.ErrBadRequest
+		}
+
 		_, err := s.doctorRepository.Find(ctx, params.RepoFindDoctor{
 			ID: param.DoctorID,
 		})
@@ -76,13 +86,19 @@ func (s service) FindBriefInformation(ctx context.Context, param params.ServiceF
 				res[idx].Permission = nil
 			} else if imageErr != nil {
 				return nil, errors.Wrap(imageErr, "error when finding access request")
+			} else {
+				res[idx].Permission = &result.PatientImageBriefInformationDoctorPermission{
+					ID:           accessRequest.ID,
+					AllowedUntil: accessRequest.AllowedUntil,
+					IsAllowed:    accessRequest.IsAllowed.Bool,
+				}
+
+				isExpired := time.Now().After(accessRequest.AllowedUntil)
+				if isExpired {
+					res[idx].Permission.IsAllowed = false
+				}
 			}
 
-			res[idx].Permission = &result.PatientImageBriefInformationDoctorPermission{
-				ID:           accessRequest.ID,
-				AllowedUntil: accessRequest.AllowedUntil,
-				IsAllowed:    accessRequest.IsAllowed.Bool,
-			}
 		}
 	}
 

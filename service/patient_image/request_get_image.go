@@ -201,3 +201,120 @@ func (s service) PatientGetImage(ctx context.Context, param params.ServicePatien
 
 	return res, nil
 }
+
+func (s service) DoctorGetImage(ctx context.Context, param params.DoctorPatientGetImage) (result.ServiceDoctorGetImage, error) {
+	err := s.validator.Validate(param)
+	if err != nil {
+		return result.ServiceDoctorGetImage{}, err
+	}
+
+	_, err = s.doctorRepository.Find(ctx, params.RepoFindDoctor{
+		ID: null.NewString(param.DoctorID, true),
+	})
+	if errors.Is(err, errors.ErrRecordNotFound) {
+		return result.ServiceDoctorGetImage{}, errors.ErrAccountNotFound
+	} else if err != nil {
+		return result.ServiceDoctorGetImage{}, errors.Wrap(err, "error when finding doctor")
+	}
+
+	doctorPermission, err := s.accessRequestRepository.GetDoctorPermissionRedis(ctx, params.RepositoryGetDoctorPermissionRedis{
+		RequestID: param.PermissionID,
+		DoctorID:  param.DoctorID,
+	})
+	if errors.Is(err, errors.ErrRecordNotFound) {
+		return result.ServiceDoctorGetImage{}, errors.ErrRecordNotFound
+	} else if err != nil {
+		return result.ServiceDoctorGetImage{}, errors.Wrap(err, "error when getting doctor permission")
+	}
+
+	permissionUUID, err := uuid.Parse(param.PermissionID)
+	if err != nil {
+		return result.ServiceDoctorGetImage{}, errors.Wrap(err, "error when parsing permission id")
+	}
+
+	currDoctorPermission, err := s.accessRequestRepository.FindByAccessID(ctx, permissionUUID)
+	if errors.Is(err, errors.ErrRecordNotFound) {
+		return result.ServiceDoctorGetImage{}, errors.ErrRecordNotFound
+	} else if err != nil {
+		return result.ServiceDoctorGetImage{}, errors.Wrap(err, "error when finding current doctor permission")
+	}
+
+	isExpired := time.Now().After(currDoctorPermission.AllowedUntil)
+	if isExpired {
+		return result.ServiceDoctorGetImage{}, errors.ErrPermissionExpired
+	}
+
+	decryptedPassword, err := aesx.Decrypt([]byte(s.config.AES.Secret), []byte(doctorPermission.Password))
+	if err != nil {
+		return result.ServiceDoctorGetImage{}, errors.Wrap(err, "error when decrypting password")
+	}
+
+	accessID, err := uuid.Parse(param.PermissionID)
+	if err != nil {
+		return result.ServiceDoctorGetImage{}, errors.Wrap(err, "error when parsing access id")
+	}
+
+	access, err := s.accessRequestRepository.FindByAccessID(ctx, accessID)
+	if errors.Is(err, errors.ErrRecordNotFound) {
+		return result.ServiceDoctorGetImage{}, errors.ErrRecordNotFound
+	}
+
+	patientSecret, err := s.patientSecretRepository.FindByPatientID(ctx, access.PatientID)
+	if errors.Is(err, errors.ErrRecordNotFound) {
+		return result.ServiceDoctorGetImage{}, errors.ErrRecordNotFound
+	}
+
+	decryptedSalt, err := aesx.Decrypt([]byte(s.config.AES.Secret), []byte(patientSecret.Salt))
+	if err != nil {
+		return result.ServiceDoctorGetImage{}, errors.Wrap(err, "error when decrypting salt")
+	}
+
+	patientimage, err := s.patientImageRepository.Find(ctx, params.RepositoryFindPatientImage{
+		ID:      access.ImageID,
+		IsValid: true,
+	})
+	if errors.Is(err, errors.ErrRecordNotFound) {
+		return result.ServiceDoctorGetImage{}, errors.ErrRecordNotFound
+	} else if err != nil {
+		return result.ServiceDoctorGetImage{}, errors.Wrap(err, "error when finding patient image")
+	}
+
+	image, err := s.cloudinaryRepository.DownloadFile(ctx, patientimage.URL)
+	if errors.Is(err, errors.ErrNotFound) {
+		return result.ServiceDoctorGetImage{}, errors.ErrNotFound
+	}
+
+	privateKey, err := rsax.DecryptPrivateKey(patientSecret.PrivateKey, string(decryptedPassword), string(decryptedSalt))
+	if err != nil {
+		return result.ServiceDoctorGetImage{}, errors.Wrap(err, "error when decrypting private key")
+	}
+
+	match, err := patientSecret.IsPrivateKeyPublicKeyMatch(privateKey)
+	if err != nil {
+		return result.ServiceDoctorGetImage{}, errors.Wrap(err, "error when checking private key and public key match")
+	} else if !match {
+		return result.ServiceDoctorGetImage{}, errors.ErrInternalServer
+	}
+
+	res := result.ServiceDoctorGetImage{
+		DocumentName: patientimage.Name,
+		DocumentType: patientimage.Type,
+	}
+	err = res.DecryptImage(privateKey, patientSecret.KeySize, image)
+	if err != nil {
+		return result.ServiceDoctorGetImage{}, errors.Wrap(err, "error when decrypting image")
+	}
+
+	param.ImageID = patientimage.ID
+	doctorAccessHistory, err := param.ToAccessHistoryModel()
+	if err != nil {
+		return result.ServiceDoctorGetImage{}, errors.Wrap(err, "error when converting to access history model")
+	}
+
+	err = s.accessHistoryRepository.Insert(ctx, doctorAccessHistory)
+	if err != nil {
+		return result.ServiceDoctorGetImage{}, errors.Wrap(err, "error when inserting access history")
+	}
+
+	return res, nil
+}

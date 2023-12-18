@@ -60,8 +60,9 @@ type ServicePatientRegistrationParam struct {
 	RelationshipStatus string `json:"relationship_status" validate:"required"`
 	Nationality        string `json:"nationality" validate:"required"`
 	Address            string `json:"address" validate:"required"`
-	Gender             bool   `json:"gender"`
+	Gender             string `json:"gender"`
 
+	GenderBool          bool
 	UnencryptedPassword string `json:"-" validate:"-"`
 }
 
@@ -83,6 +84,12 @@ func (p ServicePatientRegistrationParam) ToPatientModel() (model.Patient, error)
 		return model.Patient{}, err
 	}
 
+	if p.Gender == "Male" {
+		p.GenderBool = true
+	} else if p.Gender == "Female" {
+		p.GenderBool = false
+	}
+
 	patient := model.Patient{
 		ID:                 uuid.New(),
 		DateOfBirth:        dateOfBirth,
@@ -96,7 +103,7 @@ func (p ServicePatientRegistrationParam) ToPatientModel() (model.Patient, error)
 		RelationshipStatus: p.RelationshipStatus,
 		Nationality:        p.Nationality,
 		Address:            p.Address,
-		Gender:             p.Gender,
+		Gender:             p.GenderBool,
 	}
 
 	return patient, nil
