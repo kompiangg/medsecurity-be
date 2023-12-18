@@ -2,6 +2,7 @@ package patient_image
 
 import (
 	"context"
+	"database/sql"
 	"medsecurity/pkg/errors"
 	"medsecurity/type/model"
 	"medsecurity/type/params"
@@ -43,7 +44,7 @@ func (s repository) Find(ctx context.Context, param params.RepositoryFindPatient
 
 	var patientImage model.PatientImage
 	err = s.db.GetContext(ctx, &patientImage, s.db.Rebind(statement), args...)
-	if errors.Is(err, errors.ErrRecordNotFound) {
+	if errors.Is(err, sql.ErrNoRows) {
 		return patientImage, errors.ErrRecordNotFound
 	} else if err != nil {
 		return patientImage, errors.Wrap(err, "error when get patient image")

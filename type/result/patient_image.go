@@ -9,17 +9,24 @@ import (
 	"github.com/google/uuid"
 )
 
+type PatientImageBriefInformationDoctorPermission struct {
+	ID           uuid.UUID `json:"id"`
+	AllowedUntil time.Time `json:"allowed_until"`
+	IsAllowed    bool      `json:"is_allowed"`
+}
+
 type PatientImageBriefInformation struct {
-	ID          uuid.UUID `json:"id"`
-	PatientID   uuid.UUID `json:"patient_id"`
-	PatientName string    `json:"patient_name"`
-	DoctorID    uuid.UUID `json:"doctor_id"`
-	DoctorName  string    `json:"doctor_name"`
-	Name        string    `json:"name"`
-	Type        string    `json:"type"`
-	IsValid     bool      `json:"is_valid"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          uuid.UUID                                     `json:"id"`
+	PatientID   uuid.UUID                                     `json:"patient_id"`
+	PatientName string                                        `json:"patient_name"`
+	DoctorID    uuid.UUID                                     `json:"doctor_id"`
+	DoctorName  string                                        `json:"doctor_name"`
+	Name        string                                        `json:"name"`
+	Type        string                                        `json:"type"`
+	IsValid     bool                                          `json:"is_valid"`
+	Permission  *PatientImageBriefInformationDoctorPermission `json:"permission"`
+	CreatedAt   time.Time                                     `json:"created_at"`
+	UpdatedAt   time.Time                                     `json:"updated_at"`
 }
 
 func (p *PatientImageBriefInformation) FromPatientModel(

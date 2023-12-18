@@ -7,6 +7,7 @@ import (
 	"encoding/pem"
 	"medsecurity/pkg/errors"
 	"medsecurity/type/model"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/volatiletech/null/v9"
@@ -112,6 +113,21 @@ type ServicePatientRequestGetImage struct {
 	PatientID string `json:"-" validate:"required,uuid4"`
 }
 
+func (s ServicePatientRequestGetImage) ToAccessHistoryModel() (model.AccessHistory, error) {
+	imageID, err := uuid.Parse(s.ImageID)
+	if err != nil {
+		return model.AccessHistory{}, err
+	}
+
+	return model.AccessHistory{
+		ID:             uuid.New(),
+		PatientImageID: imageID,
+		PatientID:      null.NewString(s.PatientID, true),
+		DoctorID:       null.NewString("", false),
+		Purpose:        "Requested to get the image",
+	}, nil
+}
+
 func (s ServicePatientRequestGetImage) ComparePassword(encryptedPassword string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(encryptedPassword), []byte(s.Password))
 	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
@@ -133,7 +149,18 @@ type RepositoryFindPatientImage struct {
 type ServicePatientGetImage struct {
 	Token string `param:"token" validate:"required"`
 
-	PatientID string `json:"-"`
+	PatientID string    `json:"-"`
+	ImageID   uuid.UUID `json:"-"`
+}
+
+func (s ServicePatientGetImage) ToAccessHistoryModel() (model.AccessHistory, error) {
+	return model.AccessHistory{
+		ID:             uuid.New(),
+		PatientImageID: s.ImageID,
+		PatientID:      null.NewString(s.PatientID, true),
+		DoctorID:       null.NewString("", false),
+		Purpose:        "Downloaded the image",
+	}, nil
 }
 
 type RepositoryInsertRequestPatientImageToken struct {
@@ -147,4 +174,57 @@ type RepositoryInsertRequestPatientImageToken struct {
 
 type RepositoryFindRequestPatientImageToken struct {
 	PatientID uuid.UUID `redis:"-"`
+}
+
+type ServiceGivingPermission struct {
+	DoctorID string `json:"doctor_id" validate:"required,uuid4"`
+	ImageID  string `json:"image_id" validate:"required,uuid4"`
+	Password string `json:"password" validate:"required"`
+
+	PatientID string `json:"-"`
+}
+
+func (s ServiceGivingPermission) ToAccessRequestModel(allowedUntilInDays int) (model.AccessRequest, error) {
+	patientID, err := uuid.Parse(s.PatientID)
+	if err != nil {
+		return model.AccessRequest{}, err
+	}
+
+	doctorID, err := uuid.Parse(s.DoctorID)
+	if err != nil {
+		return model.AccessRequest{}, err
+	}
+
+	imageID, err := uuid.Parse(s.ImageID)
+	if err != nil {
+		return model.AccessRequest{}, err
+	}
+
+	return model.AccessRequest{
+		ID:           uuid.New(),
+		PatientID:    patientID,
+		DoctorID:     doctorID,
+		ImageID:      imageID,
+		Purpose:      "Giving permission to access the image",
+		IsAllowed:    null.BoolFrom(true),
+		AllowedUntil: time.Now().AddDate(0, 0, allowedUntilInDays),
+	}, nil
+}
+
+func (s ServiceGivingPermission) CompareHashAndPassword(encryptedPassword string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(encryptedPassword), []byte(s.Password))
+	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+		return errors.ErrIncorrectPassword
+	} else if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+type RepositoryInsertRequestToRedis struct {
+	RequestID       string `redis:"-"`
+	KeepAliveInDays int    `redis:"-"`
+
+	Password string `redis:"password"`
 }

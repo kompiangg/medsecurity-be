@@ -2,6 +2,7 @@ package router
 
 import (
 	"medsecurity/cmd/webservice/middleware"
+	"medsecurity/cmd/webservice/router/access_request"
 	"medsecurity/cmd/webservice/router/doctor"
 	"medsecurity/cmd/webservice/router/otp"
 	"medsecurity/cmd/webservice/router/patient"
@@ -26,4 +27,5 @@ func RegisterHandler(
 	doctor.InitHandler(echo, service.Auth, config, middleware)
 	session.InitHandler(echo, service.Auth, config, middleware)
 	otp.InitHandler(echo, service.PatientImage, middleware)
+	access_request.InitHandler(echo, service.PatientImage, middleware)
 }

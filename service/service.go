@@ -47,6 +47,7 @@ func New(
 		repository.PatientImage,
 		repository.Cloudinary,
 		repository.AccessHistory,
+		repository.AccessRequest,
 		validator,
 		patient_image.Config{
 			AES: config.AES,

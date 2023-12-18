@@ -44,7 +44,7 @@ func WriteErrorResponse(c echo.Context, errParam error, detail interface{}) erro
 			errs := joinErr.Unwrap()[1].Error()
 			detail = strings.Split(errs, "\n --- ")[1:]
 		}
-	} else if x.Is(errParam, x.ErrInternalServer) {
+	} else if e.HTTPErrorCode == http.StatusInternalServerError {
 		x.ErrorStack(errParam)
 		detail = nil
 	} else {

@@ -69,6 +69,21 @@ func (s service) FindBriefInformation(ctx context.Context, param params.ServiceF
 		}
 
 		res[idx].FromPatientModel(patientImages[idx], patient, doctor)
+
+		if param.Role == constant.DoctorRole {
+			accessRequest, imageErr := s.accessRequestRepository.FindByImageID(ctx, patientImages[idx].ID)
+			if errors.Is(imageErr, errors.ErrRecordNotFound) {
+				res[idx].Permission = nil
+			} else if imageErr != nil {
+				return nil, errors.Wrap(imageErr, "error when finding access request")
+			}
+
+			res[idx].Permission = &result.PatientImageBriefInformationDoctorPermission{
+				ID:           accessRequest.ID,
+				AllowedUntil: accessRequest.AllowedUntil,
+				IsAllowed:    accessRequest.IsAllowed.Bool,
+			}
+		}
 	}
 
 	return res, nil

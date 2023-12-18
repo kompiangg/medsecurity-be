@@ -5,6 +5,7 @@ import (
 	"medsecurity/config"
 	"medsecurity/pkg/validator"
 	"medsecurity/repository/access_history"
+	"medsecurity/repository/access_request"
 	"medsecurity/repository/cloudinary"
 	"medsecurity/repository/doctor"
 	"medsecurity/repository/patient"
@@ -19,6 +20,7 @@ type Service interface {
 	FindBriefInformation(ctx context.Context, param params.ServiceFindPatientImage) ([]result.PatientImageBriefInformation, error)
 	PatientRequestGetImage(ctx context.Context, param params.ServicePatientRequestGetImage) (result.ServicePatientRequestGetImage, error)
 	PatientGetImage(ctx context.Context, param params.ServicePatientGetImage) (result.ServicePatientGetImage, error)
+	GivingPermission(ctx context.Context, param params.ServiceGivingPermission) error
 }
 
 type service struct {
@@ -28,6 +30,7 @@ type service struct {
 	patientImageRepository  patient_image.Repository
 	cloudinaryRepository    cloudinary.Repository
 	accessHistoryRepository access_history.Repository
+	accessRequestRepository access_request.Repository
 	validator               validator.ValidatorItf
 	config                  Config
 }
@@ -43,6 +46,7 @@ func New(
 	patientImageRepository patient_image.Repository,
 	cloudinaryRepository cloudinary.Repository,
 	accessHistoryRepository access_history.Repository,
+	accessRequestRepository access_request.Repository,
 	validator validator.ValidatorItf,
 	config Config,
 ) Service {
@@ -53,6 +57,7 @@ func New(
 		patientImageRepository:  patientImageRepository,
 		cloudinaryRepository:    cloudinaryRepository,
 		accessHistoryRepository: accessHistoryRepository,
+		accessRequestRepository: accessRequestRepository,
 		validator:               validator,
 		config:                  config,
 	}

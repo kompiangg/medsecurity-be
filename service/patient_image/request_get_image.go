@@ -77,6 +77,16 @@ func (s service) PatientRequestGetImage(ctx context.Context, param params.Servic
 		return result.ServicePatientRequestGetImage{}, errors.Wrap(err, "error when inserting token")
 	}
 
+	accesHistoryModel, err := param.ToAccessHistoryModel()
+	if err != nil {
+		return result.ServicePatientRequestGetImage{}, errors.Wrap(err, "error when converting to access history model")
+	}
+
+	err = s.accessHistoryRepository.Insert(ctx, accesHistoryModel)
+	if err != nil {
+		return result.ServicePatientRequestGetImage{}, errors.Wrap(err, "error when inserting access history")
+	}
+
 	return result.ServicePatientRequestGetImage{
 		Token:     token,
 		ExpiredAt: time.Now().Add(time.Minute * time.Duration(validInMinute)).Unix(),
@@ -138,6 +148,8 @@ func (s service) PatientGetImage(ctx context.Context, param params.ServicePatien
 		return result.ServicePatientGetImage{}, errors.Wrap(err, "error when parsing image id")
 	}
 
+	param.ImageID = imageID
+
 	patientImage, err := s.patientImageRepository.Find(ctx, params.RepositoryFindPatientImage{
 		ID:        imageID,
 		PatientID: null.NewString(param.PatientID, true),
@@ -175,6 +187,16 @@ func (s service) PatientGetImage(ctx context.Context, param params.ServicePatien
 	err = res.DecryptImage(privateKey, patientSecret.KeySize, image)
 	if err != nil {
 		return result.ServicePatientGetImage{}, errors.Wrap(err, "error when decrypting image")
+	}
+
+	accessHistoryModel, err := param.ToAccessHistoryModel()
+	if err != nil {
+		return result.ServicePatientGetImage{}, errors.Wrap(err, "error when converting to access history model")
+	}
+
+	err = s.accessHistoryRepository.Insert(ctx, accessHistoryModel)
+	if err != nil {
+		return result.ServicePatientGetImage{}, errors.Wrap(err, "error when inserting access history")
 	}
 
 	return res, nil

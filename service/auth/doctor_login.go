@@ -4,6 +4,7 @@ import (
 	"context"
 	"medsecurity/config"
 	"medsecurity/pkg/errors"
+	"medsecurity/type/constant"
 	"medsecurity/type/params"
 	"medsecurity/type/result"
 
@@ -36,6 +37,8 @@ func (s service) DoctorLogin(ctx context.Context, param params.ServiceDoctorLogi
 	if err != nil {
 		return result.ServiceDoctorLogin{}, errors.Wrap(err, "error at generate access token")
 	}
+
+	res.Role = constant.DoctorRole
 
 	return res, nil
 }

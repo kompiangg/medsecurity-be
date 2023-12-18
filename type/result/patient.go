@@ -9,6 +9,7 @@ import (
 
 type ServicePatientLogin struct {
 	AccessToken string `json:"access_token"`
+	Role        string `json:"role"`
 }
 
 type ServiceGetAllPatients struct {
